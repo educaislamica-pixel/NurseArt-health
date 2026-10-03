@@ -1,59 +1,52 @@
 # NurseArt
 
-Aplicación de productividad, salud y bienestar. Funciona sin servidor: todos los datos se guardan en el `localStorage` de tu navegador.
+Aplicación personal de productividad, organización semanal, salud, nutrición y bienestar. Sin backend ni autenticación: todo se guarda en el `localStorage` del navegador.
 
-## Tecnologías
-React 18 · Vite · TailwindCSS 3 · Recharts · Lucide React · LocalStorage · PWA
+**Stack:** React 18 · Vite · TailwindCSS 3 · Recharts · Lucide React · PWA instalable · tipografía Inter
 
-## Instalación y uso
+## Instalación
 ```bash
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # genera /dist
-npm run preview    # prueba la versión de producción (aquí se activa la PWA)
+npm run preview    # versión de producción (activa el service worker)
 ```
 Requiere Node.js 18 o superior.
 
-## Pantallas
-| Pantalla | Qué hace |
-|---|---|
-| Inicio | Progreso global del día, resumen semanal, puntos, rachas y tarjetas resumen |
-| Tareas | Crear, editar, eliminar y completar tareas con prioridad alta, media o baja |
-| Nutrición | Desayuno, comida, cena, fruta y agua, con seguimiento semanal |
-| Salud | Ejercicio, pasos, sueño, estiramientos y meditación |
-| Estadísticas | Gráfico circular de puntos, gráfico semanal, porcentajes, puntos y rachas |
+## Módulos
+- **Inicio:** progreso semanal, puntos, racha actual y mejor racha, resumen de tareas y hábitos, tareas de hoy.
+- **Semana:** calendario propio de lunes a domingo. Crea tareas por día, muévelas con las flechas o arrastrándolas, complétalas y marca los hábitos de cada día. Incluye notas semanales.
+- **Tareas:** crear, editar, eliminar y completar, con título, descripción, prioridad (alta, media, baja) y fecha.
+- **Salud:** checklist semanal de nutrición (6 hábitos) y salud (5 hábitos).
+- **Estadísticas:** gráfico circular (completado/pendiente), gráfico semanal (tareas, nutrición, salud), porcentajes, puntos, rachas y logros.
 
-En móvil la navegación va abajo; en escritorio aparece una barra lateral.
+## Gamificación
+- Tarea completada: +10. Hábito completado: +5. Semana por encima del 80 %: +100.
+- **Racha:** días seguidos con al menos el 50 % de lo previsto (hábitos del día y tareas con esa fecha). Hoy no la rompe hasta que acabe el día.
+- **Logros:** primera semana completa (más del 80 %), 7 días seguidos, 30 entrenamientos (ejercicio marcado) y 10 días saludables (al menos el 80 % de los hábitos).
 
-## Cómo se calculan los datos
-- **Metas diarias:** 8 vasos de agua, 30 min de ejercicio, 8.000 pasos, 7 h de sueño, 10 min de meditación.
-- **Progreso del día:** media entre nutrición (5 objetivos) y salud (5 objetivos). Cada objetivo cuenta de forma proporcional.
-- **Puntos:** tarea completada (alta 20, media 10, baja 5) + hasta 50 puntos al día por nutrición + hasta 50 por salud.
-- **Racha:** días seguidos con al menos un 50 % de progreso. Hoy no rompe la racha hasta que acaba el día.
+## Reinicio semanal
+Los hábitos se guardan por semana (clave = fecha del lunes), así que cada lunes empiezan en blanco sin borrar nada. Estadísticas históricas, puntos y rachas se mantienen porque se calculan a partir de ese historial.
 
 ## Estructura
 ```
 nurseart/
-├── index.html
-├── package.json
-├── vite.config.js · tailwind.config.js · postcss.config.js
-├── public/            logo-nurseart.png, iconos PWA, manifest.webmanifest, sw.js
+├── index.html · package.json · vite.config.js · tailwind.config.js · postcss.config.js
+├── public/        logo-nurseart.png, icon-192.png, icon-512.png, manifest.json, sw.js
 └── src/
     ├── main.jsx · App.jsx · index.css
-    ├── context/AppContext.jsx      estado global y cálculo de estadísticas
+    ├── context/AppContext.jsx       estado, acciones y estadísticas derivadas
     ├── hooks/useLocalStorage.js
-    ├── utils/helpers.js            fechas, metas y puntuaciones
-    ├── components/                 Logo, Navigation, StatCard, ProgressRing, ToggleCard, CounterCard, PageHeader
-    └── pages/                      Dashboard, Tasks, Nutrition, Health, Stats
+    ├── utils/                       dates.js, habits.js, stats.js
+    ├── components/                  Logo, SplashScreen, Navigation, PageHeader, StatCard,
+    │                                ProgressRing, TaskItem, TaskModal, HabitChecklist
+    └── pages/                       Dashboard, Week, Tasks, Wellness, Stats
 ```
 
-## PWA
-`public/manifest.webmanifest` y `public/sw.js` hacen la app instalable y utilizable sin conexión. El service worker se registra solo en producción (`npm run build` + `npm run preview`, o al desplegar con HTTPS).
+## Datos y personalización
+- Claves de LocalStorage: `nurseart:tasks`, `nurseart:habits`, `nurseart:notes`.
+- Colores: `tailwind.config.js`. Hábitos, puntos y prioridades: `src/utils/habits.js`.
+- Logo: sustituye `public/logo-nurseart.png`; los iconos de la PWA son `icon-192.png` e `icon-512.png`.
 
-## Personalización
-- Colores de marca: `tailwind.config.js` (`primary`, `secondary`, `accent`).
-- Logo: sustituye `public/logo-nurseart.png`. Los iconos de la PWA son `public/icon-192.png` y `public/icon-512.png`.
-- Metas y puntos: `src/utils/helpers.js`.
-
-## Datos
-Se guardan en las claves `nurseart:tasks`, `nurseart:nutrition` y `nurseart:health`. Borrar los datos del sitio en el navegador reinicia la app.
+## Despliegue en Vercel
+Sube el proyecto a GitHub, impórtalo en vercel.com y pulsa Deploy (Vite se detecta solo: `npm run build`, carpeta `dist`).
